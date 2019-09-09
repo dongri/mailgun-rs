@@ -1,5 +1,5 @@
-pub mod mailgun;
-use mailgun::{Mailgun, EmailAddress, Message};
+pub mod lib;
+use lib::{Mailgun, EmailAddress, Message};
 
 fn main() {
     let domain = "domain.com";
