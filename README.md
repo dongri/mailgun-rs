@@ -3,7 +3,7 @@
 An unofficial client library for the Mailgun API
 
 ### examples
-```
+```rust
 extern crate mailgun_rs;
 
 use mailgun_rs::{Mailgun, EmailAddress, Message};
