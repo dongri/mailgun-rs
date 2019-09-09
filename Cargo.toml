@@ -2,6 +2,7 @@
 name = "mailgun-rs"
 version = "0.1.0"
 authors = ["Dongri Jin <dongrify@gmail.com>"]
+description = "An unofficial client library for the Mailgun API"
 edition = "2018"
 repository = "https://github.com/dongri/mailgun-rs"
 license = "MIT"
