@@ -1,8 +1,9 @@
 pub mod lib;
 use lib::{Mailgun, EmailAddress, Message};
+use std::error::Error;
 
 fn main() {
-    let domain = "domain.com";
+    let domain = "hackerth.com";
     let key = "key-xxxxxx";
     let recipient = "dongrify@gmail.com";
     let recipient = EmailAddress::address(&recipient);
@@ -16,6 +17,12 @@ fn main() {
     let client = Mailgun{api_key: String::from(key), domain: String::from(domain), message: message};
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
     
-    let res = client.send(&sender);
-    println!("{:?}", res);
+    match client.send(&sender) {
+      Ok(_) => {
+        println!("successful");
+      }
+      Err(err) => {
+        println!("{}", err.description());
+      }
+    }
 }

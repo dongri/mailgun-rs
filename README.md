@@ -7,9 +7,10 @@ An unofficial client library for the Mailgun API
 extern crate mailgun_rs;
 
 use mailgun_rs::{Mailgun, EmailAddress, Message};
+use std::error::Error;
 
-fn mailgun() {
-    let domain = "domain.com";
+fn main() {
+    let domain = "hackerth.com";
     let key = "key-xxxxxx";
     let recipient = "dongrify@gmail.com";
     let recipient = EmailAddress::address(&recipient);
@@ -23,7 +24,13 @@ fn mailgun() {
     let client = Mailgun{api_key: String::from(key), domain: String::from(domain), message: message};
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
     
-    let res = client.send(&sender);
-    println!("{:?}", res);
+    match client.send(&sender) {
+      Ok(_) => {
+        println!("successful");
+      }
+      Err(err) => {
+        println!("{}", err.description());
+      }
+    }
 }
 ```
