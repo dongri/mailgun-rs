@@ -1,5 +1,5 @@
 pub mod lib;
-use lib::{Mailgun, EmailAddress, Message};
+use lib::{EmailAddress, Mailgun, Message};
 use std::error::Error;
 
 fn main() {
@@ -14,15 +14,19 @@ fn main() {
         ..Default::default()
     };
 
-    let client = Mailgun{api_key: String::from(key), domain: String::from(domain), message: message};
+    let client = Mailgun {
+        api_key: String::from(key),
+        domain: String::from(domain),
+        message: message,
+    };
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
-    
+
     match client.send(&sender) {
-      Ok(_) => {
-        println!("successful");
-      }
-      Err(err) => {
-        println!("{}", err.description());
-      }
+        Ok(_) => {
+            println!("successful");
+        }
+        Err(err) => {
+            println!("{}", err.description());
+        }
     }
 }
