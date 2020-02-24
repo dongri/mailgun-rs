@@ -4,10 +4,8 @@ An unofficial client library for the Mailgun API
 
 ```toml
 # Cargo.toml
-...
 [dependencies]
 mailgun-rs = "0.1.3"
-...
 ```
 
 ### Examples
