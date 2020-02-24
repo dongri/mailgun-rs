@@ -3,6 +3,14 @@
 An unofficial client library for the Mailgun API
 
 ### examples
+```
+# Cargo.toml
+...
+[dependencies]
+mailgun-rs = "0.1.3"
+...
+```
+
 ```rust
 extern crate mailgun_rs;
 
