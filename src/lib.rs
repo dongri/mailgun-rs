@@ -1,4 +1,4 @@
-use reqwest;
+
 use reqwest::Error as ReqError;
 use serde::Deserialize;
 use std::collections::HashMap;
@@ -23,14 +23,14 @@ pub struct SendResponse {
 
 impl Mailgun {
     pub fn send(self, sender: &EmailAddress) -> SendResult<SendResponse> {
-        let client = reqwest::Client::new();
+        let client = reqwest::blocking::Client::new();
         let mut params = self.message.to_params();
         params.insert("from".to_string(), sender.to_string());
         let url = format!("{}/{}/{}", MAILGUN_API, self.domain, MESSAGES_ENDPOINT);
 
-        let mut res = client
-            .post(&url)
-            .basic_auth("api", Some(self.api_key.clone()))
+        let res = client
+            .post(url)
+            .basic_auth("api", Some(self.api_key))
             .form(&params)
             .send()?
             .error_for_status()?;
