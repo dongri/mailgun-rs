@@ -6,7 +6,7 @@ fn main() {
     let domain = "hackerth.com";
     let key = "key-xxxxxx";
     let recipient = "dongrify@gmail.com";
-    let recipient = EmailAddress::address(&recipient);
+    let recipient = EmailAddress::address(recipient);
     let message = Message {
         to: vec![recipient],
         subject: String::from("mailgun-rs"),
@@ -17,7 +17,7 @@ fn main() {
     let client = Mailgun {
         api_key: String::from(key),
         domain: String::from(domain),
-        message: message,
+        message,
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
 
