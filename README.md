@@ -5,7 +5,7 @@ An unofficial client library for the Mailgun API
 ```toml
 # Cargo.toml
 [dependencies]
-mailgun-rs = "0.1.3"
+mailgun-rs = "0.1.5"
 ```
 
 ### Examples
@@ -13,14 +13,20 @@ mailgun-rs = "0.1.3"
 ```rust
 extern crate mailgun_rs;
 
-use mailgun_rs::{Mailgun, EmailAddress, Message};
-use std::error::Error;
+use mailgun_rs::{EmailAddress, Mailgun, Message};
+use std::collections::HashMap;
 
 fn main() {
-    let domain = "hackerth.com";
+    let domain = "mailgun.hackerth.com";
     let key = "key-xxxxxx";
     let recipient = "dongrify@gmail.com";
-    let recipient = EmailAddress::address(&recipient);
+
+    send_html(recipient, key, domain);
+    send_template(recipient, key, domain);
+}
+
+fn send_html(recipient: &str, key: &str, domain: &str) {
+    let recipient = EmailAddress::address(recipient);
     let message = Message {
         to: vec![recipient],
         subject: String::from("mailgun-rs"),
@@ -28,16 +34,50 @@ fn main() {
         ..Default::default()
     };
 
-    let client = Mailgun{api_key: String::from(key), domain: String::from(domain), message: message};
+    let client = Mailgun {
+        api_key: String::from(key),
+        domain: String::from(domain),
+        message,
+    };
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
-    
+
     match client.send(&sender) {
-      Ok(_) => {
-        println!("successful");
-      }
-      Err(err) => {
-        println!("{}", err.description());
-      }
+        Ok(_) => {
+            println!("successful");
+        }
+        Err(err) => {
+            println!("Error: {err}");
+        }
+    }
+}
+
+fn send_template(recipient: &str, key: &str, domain: &str) {
+    let mut template_vars = HashMap::new();
+    template_vars.insert(String::from("firstname"), String::from("Dongri"));
+
+    let recipient = EmailAddress::address(recipient);
+    let message = Message {
+        to: vec![recipient],
+        subject: String::from("mailgun-rs"),
+        template: String::from("template-1"),
+        template_vars,
+        ..Default::default()
+    };
+
+    let client = Mailgun {
+        api_key: String::from(key),
+        domain: String::from(domain),
+        message,
+    };
+    let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
+
+    match client.send(&sender) {
+        Ok(_) => {
+            println!("successful");
+        }
+        Err(err) => {
+            println!("Error: {err}");
+        }
     }
 }
 ```
