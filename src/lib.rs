@@ -1,7 +1,7 @@
-
 use reqwest::Error as ReqError;
 use serde::Deserialize;
 use std::collections::HashMap;
+use std::fmt;
 
 const MAILGUN_API: &str = "https://api.mailgun.net/v3";
 const MESSAGES_ENDPOINT: &str = "messages";
@@ -24,7 +24,7 @@ pub struct SendResponse {
 impl Mailgun {
     pub fn send(self, sender: &EmailAddress) -> SendResult<SendResponse> {
         let client = reqwest::blocking::Client::new();
-        let mut params = self.message.to_params();
+        let mut params = self.message.params();
         params.insert("from".to_string(), sender.to_string());
         let url = format!("{}/{}/{}", MAILGUN_API, self.domain, MESSAGES_ENDPOINT);
 
@@ -48,10 +48,12 @@ pub struct Message {
     pub subject: String,
     pub text: String,
     pub html: String,
+    pub template: String,
+    pub template_vars: HashMap<String, String>,
 }
 
 impl Message {
-    fn to_params(self) -> HashMap<String, String> {
+    fn params(self) -> HashMap<String, String> {
         let mut params = HashMap::new();
 
         Message::add_recipients("to", self.to, &mut params);
@@ -62,6 +64,15 @@ impl Message {
 
         params.insert(String::from("text"), self.text);
         params.insert(String::from("html"), self.html);
+
+        // add template
+        if !self.template.is_empty() {
+            params.insert(String::from("template"), self.template);
+            params.insert(
+                String::from("h:X-Mailgun-Variables"),
+                serde_json::to_string(&self.template_vars).unwrap(),
+            );
+        }
 
         params
     }
@@ -101,15 +112,13 @@ impl EmailAddress {
             address: address.to_string(),
         }
     }
+}
 
-    pub fn email(&self) -> &str {
-        &self.address
-    }
-
-    pub fn to_string(&self) -> String {
+impl fmt::Display for EmailAddress {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self.name {
-            Some(ref name) => format!("{} <{}>", name, self.address),
-            None => self.address.clone(),
+            Some(ref name) => write!(f, "{} <{}>", name, self.address),
+            None => write!(f, "{}", self.address),
         }
     }
 }
