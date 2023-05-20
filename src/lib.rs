@@ -38,6 +38,23 @@ impl Mailgun {
         let parsed: SendResponse = res.json()?;
         Ok(parsed)
     }
+    pub async fn async_send(self, sender: &EmailAddress) -> SendResult<SendResponse> {
+        let client = reqwest::Client::new();
+        let mut params = self.message.params();
+        params.insert("from".to_string(), sender.to_string());
+        let url = format!("{}/{}/{}", MAILGUN_API, self.domain, MESSAGES_ENDPOINT);
+
+        let res = client
+            .post(url)
+            .basic_auth("api", Some(self.api_key))
+            .form(&params)
+            .send()
+            .await?
+            .error_for_status()?;
+
+        let parsed: SendResponse = res.json().await?;
+        Ok(parsed)
+    }
 }
 
 #[derive(Default)]
