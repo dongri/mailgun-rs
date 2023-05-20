@@ -990,16 +990,6 @@ dependencies = [
 
 [[package]]
 name = "rocket"
-version = "0.1.0"
-dependencies = [
- "dotenv",
- "mailgun-rs",
- "rocket 0.5.0-rc.3",
- "tokio",
-]
-
-[[package]]
-name = "rocket"
 version = "0.5.0-rc.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "58734f7401ae5cfd129685b48f61182331745b357b96f2367f01aebaf1cc9cc9"
@@ -1035,6 +1025,16 @@ dependencies = [
  "ubyte",
  "version_check",
  "yansi",
+]
+
+[[package]]
+name = "rocket-example"
+version = "0.1.0"
+dependencies = [
+ "dotenv",
+ "mailgun-rs",
+ "rocket",
+ "tokio",
 ]
 
 [[package]]
