@@ -590,9 +590,9 @@ dependencies = [
 
 [[package]]
 name = "mailgun-rs"
-version = "0.1.5"
+version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4e0a84bc9a6846455a180a8380001db7180cb0e9436425dd7ea8c8306392ccd2"
+checksum = "f0ac440031b5bd9af36e10b42168fc954ae97f2e4067a50b8d6164d0c4d28828"
 dependencies = [
  "reqwest",
  "serde",

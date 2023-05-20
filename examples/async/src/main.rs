@@ -12,11 +12,11 @@ async fn main() {
     let key = &env::var("MAILGUN_PRIVATE_API_KEY").expect("MAILGUN_PRIVATE_API_KEY not set");
     let recipient = "dongrify@gmail.com";
 
-    send_html(recipient, key, domain);
-    send_template(recipient, key, domain);
+    send_html(recipient, key, domain).await;
+    send_template(recipient, key, domain).await;
 }
 
-fn send_html(recipient: &str, key: &str, domain: &str) {
+async fn send_html(recipient: &str, key: &str, domain: &str) {
     let recipient = EmailAddress::address(recipient);
     let message = Message {
         to: vec![recipient],
@@ -30,7 +30,7 @@ fn send_html(recipient: &str, key: &str, domain: &str) {
         message,
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
-    match client.async_send(&sender) {
+    match client.async_send(&sender).await {
         Ok(_) => {
             println!("successful");
         }
@@ -40,7 +40,7 @@ fn send_html(recipient: &str, key: &str, domain: &str) {
     }
 }
 
-fn send_template(recipient: &str, key: &str, domain: &str) {
+async fn send_template(recipient: &str, key: &str, domain: &str) {
     let mut template_vars = HashMap::new();
     template_vars.insert(String::from("firstname"), String::from("Dongri"));
     let recipient = EmailAddress::address(recipient);
@@ -57,7 +57,7 @@ fn send_template(recipient: &str, key: &str, domain: &str) {
         message,
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
-    match client.async_send(&sender) {
+    match client.async_send(&sender).await {
         Ok(_) => {
             println!("successful");
         }
