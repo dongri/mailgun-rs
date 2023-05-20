@@ -6,6 +6,5 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-mailgun-rs = "0.1.5"
-tokio = "1.28.1"
+mailgun-rs = "0.1.6"
 dotenv = "0.15.0"
