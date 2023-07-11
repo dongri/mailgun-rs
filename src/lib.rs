@@ -84,20 +84,20 @@ impl Message {
         params.insert(String::from("html"), self.html);
 
         // add template
-    if !self.template.is_empty() {
-        params.insert(String::from("template"), self.template);
-        if let Some(template_json) = self.template_json {
-          params.insert(
-            String::from("h:X-Mailgun-Variables"),
-            serde_json::to_string(&template_json).unwrap(),
-          );
-        } else {
-          params.insert(
-            String::from("h:X-Mailgun-Variables"),
-            serde_json::to_string(&self.template_vars).unwrap(),
-          );
+        if !self.template.is_empty() {
+            params.insert(String::from("template"), self.template);
+            if let Some(template_json) = self.template_json {
+                params.insert(
+                    String::from("h:X-Mailgun-Variables"),
+                    serde_json::to_string(&template_json).unwrap(),
+                );
+            } else {
+                params.insert(
+                    String::from("h:X-Mailgun-Variables"),
+                    serde_json::to_string(&self.template_vars).unwrap(),
+                );
+            }
         }
-      }
 
         params
     }
