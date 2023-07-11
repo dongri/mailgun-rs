@@ -67,6 +67,7 @@ pub struct Message {
     pub html: String,
     pub template: String,
     pub template_vars: HashMap<String, String>,
+    pub template_json: Option<serde_json::Value>,
 }
 
 impl Message {
@@ -85,10 +86,17 @@ impl Message {
         // add template
         if !self.template.is_empty() {
             params.insert(String::from("template"), self.template);
-            params.insert(
-                String::from("h:X-Mailgun-Variables"),
-                serde_json::to_string(&self.template_vars).unwrap(),
-            );
+            if let Some(template_json) = self.template_json {
+                params.insert(
+                    String::from("h:X-Mailgun-Variables"),
+                    serde_json::to_string(&template_json).unwrap(),
+                );
+            } else {
+                params.insert(
+                    String::from("h:X-Mailgun-Variables"),
+                    serde_json::to_string(&self.template_vars).unwrap(),
+                );
+            }
         }
 
         params
