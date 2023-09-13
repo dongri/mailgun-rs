@@ -2,6 +2,7 @@ use reqwest::Error as ReqError;
 use serde::Deserialize;
 use std::collections::HashMap;
 use std::fmt;
+use typed_builder::TypedBuilder;
 
 const MAILGUN_API: &str = "https://api.mailgun.net/v3";
 const MESSAGES_ENDPOINT: &str = "messages";
@@ -57,16 +58,25 @@ impl Mailgun {
     }
 }
 
-#[derive(Default)]
+#[derive(TypedBuilder, Default, Debug, PartialEq, Eq)]
 pub struct Message {
+    #[builder(setter(into))]
     pub to: Vec<EmailAddress>,
+    #[builder(default, setter(into))]
     pub cc: Vec<EmailAddress>,
+    #[builder(default, setter(into))]
     pub bcc: Vec<EmailAddress>,
+    #[builder(setter(into))]
     pub subject: String,
+    #[builder(default, setter(into))]
     pub text: String,
+    #[builder(default, setter(into))]
     pub html: String,
+    #[builder(default, setter(into))]
     pub template: String,
+    #[builder(default)]
     pub template_vars: HashMap<String, String>,
+    #[builder(default)]
     pub template_json: Option<serde_json::Value>,
 }
 
@@ -118,6 +128,7 @@ impl Message {
     }
 }
 
+#[derive(TypedBuilder, Debug, PartialEq, Eq)]
 pub struct EmailAddress {
     name: Option<String>,
     address: String,
@@ -145,5 +156,55 @@ impl fmt::Display for EmailAddress {
             Some(ref name) => write!(f, "{} <{}>", name, self.address),
             None => write!(f, "{}", self.address),
         }
+    }
+}
+
+impl From<&str> for EmailAddress {
+    fn from(address: &str) -> Self {
+        EmailAddress::address(address)
+    }
+}
+
+impl From<(&str, &str)> for EmailAddress {
+    fn from((name, address): (&str, &str)) -> Self {
+        EmailAddress::name_address(name, address)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn typed_builder_should_work() {
+        let message = Message::builder()
+            .to(vec!["example@example.com".into()])
+            .cc(vec![("Eren", "eren@redmc.me").into()])
+            .text("")
+            .html("<h1>Hello</h1>")
+            .subject("Hello")
+            .template("template")
+            .template_vars([("name".into(), "value".into())].iter().cloned().collect())
+            .build();
+        assert_eq!(
+            message,
+            Message {
+                to: vec![EmailAddress {
+                    name: None,
+                    address: "example@example.com".to_string()
+                }],
+                cc: vec![EmailAddress {
+                    name: Some("Eren".to_string()),
+                    address: "eren@redmc.me".to_string()
+                }],
+                bcc: vec![],
+                subject: "Hello".to_string(),
+                text: "".to_string(),
+                html: "<h1>Hello</h1>".to_string(),
+                template: "template".to_string(),
+                template_vars: [("name".into(), "value".into())].iter().cloned().collect(),
+                template_json: None,
+            }
+        );
     }
 }
