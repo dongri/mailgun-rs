@@ -68,9 +68,9 @@ pub struct Message {
     pub bcc: Vec<EmailAddress>,
     #[builder(setter(into))]
     pub subject: String,
-    #[builder(setter(into))]
+    #[builder(default, setter(into))]
     pub text: String,
-    #[builder(setter(into))]
+    #[builder(default, setter(into))]
     pub html: String,
     #[builder(default, setter(into))]
     pub template: String,
