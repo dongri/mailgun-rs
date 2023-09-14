@@ -1,12 +1,9 @@
-use dotenv::dotenv;
 use std::env;
 
-use mailgun_rs::{EmailAddress, Mailgun, Message};
+use mailgun_rs::{EmailAddress, Mailgun, MailgunRegion, Message};
 use std::collections::HashMap;
 
 fn main() {
-    dotenv().ok();
-
     let domain = &env::var("MAILGUN_DOMAIN").expect("MAILGUN_DOMAIN not set");
     let key = &env::var("MAILGUN_PRIVATE_API_KEY").expect("MAILGUN_PRIVATE_API_KEY not set");
     let recipient = "dongrify@gmail.com";
@@ -29,7 +26,7 @@ fn send_html(recipient: &str, key: &str, domain: &str) {
         message,
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
-    match client.send(&sender) {
+    match client.send(MailgunRegion::US, &sender) {
         Ok(_) => {
             println!("successful");
         }
@@ -56,7 +53,7 @@ fn send_template(recipient: &str, key: &str, domain: &str) {
         message,
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
-    match client.send(&sender) {
+    match client.send(MailgunRegion::US, &sender) {
         Ok(_) => {
             println!("successful");
         }
@@ -65,3 +62,5 @@ fn send_template(recipient: &str, key: &str, domain: &str) {
         }
     }
 }
+
+// MAILGUN_DOMAIN=xxx MAILGUN_PRIVATE_API_KEY=xxx-xxx-xxx cargo run --package mailgun-rs --example basic
