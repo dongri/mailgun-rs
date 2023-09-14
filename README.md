@@ -13,7 +13,7 @@ mailgun-rs = "0.1.9"
 ```rust
 extern crate mailgun_rs;
 
-use mailgun_rs::{EmailAddress, Mailgun, Message};
+use mailgun_rs::{EmailAddress, Mailgun, MailgunRegion, Message};
 use std::collections::HashMap;
 
 fn main() {
@@ -41,7 +41,7 @@ fn send_html(recipient: &str, key: &str, domain: &str) {
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
 
-    match client.send(&sender) {
+    match client.send(MailgunRegion::US, &sender) {
         Ok(_) => {
             println!("successful");
         }
@@ -71,7 +71,7 @@ fn send_template(recipient: &str, key: &str, domain: &str) {
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
 
-    match client.send(&sender) {
+    match client.send(MailgunRegion::US, &sender) {
         Ok(_) => {
             println!("successful");
         }
