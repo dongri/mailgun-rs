@@ -4,8 +4,19 @@ use std::collections::HashMap;
 use std::fmt;
 use typed_builder::TypedBuilder;
 
-const MAILGUN_API: &str = "https://api.mailgun.net/v3";
 const MESSAGES_ENDPOINT: &str = "messages";
+
+pub enum MailgunRegion {
+    US,
+    EU,
+}
+
+fn get_base_url(region: MailgunRegion) -> &'static str {
+    match region {
+        MailgunRegion::US => "https://api.mailgun.net/v3",
+        MailgunRegion::EU => "https://api.eu.mailgun.net/v3",
+    }
+}
 
 #[derive(Default)]
 pub struct Mailgun {
@@ -23,11 +34,16 @@ pub struct SendResponse {
 }
 
 impl Mailgun {
-    pub fn send(self, sender: &EmailAddress) -> SendResult<SendResponse> {
+    pub fn send(self, region: MailgunRegion, sender: &EmailAddress) -> SendResult<SendResponse> {
         let client = reqwest::blocking::Client::new();
         let mut params = self.message.params();
         params.insert("from".to_string(), sender.to_string());
-        let url = format!("{}/{}/{}", MAILGUN_API, self.domain, MESSAGES_ENDPOINT);
+        let url = format!(
+            "{}/{}/{}",
+            get_base_url(region),
+            self.domain,
+            MESSAGES_ENDPOINT
+        );
 
         let res = client
             .post(url)
@@ -39,11 +55,20 @@ impl Mailgun {
         let parsed: SendResponse = res.json()?;
         Ok(parsed)
     }
-    pub async fn async_send(self, sender: &EmailAddress) -> SendResult<SendResponse> {
+    pub async fn async_send(
+        self,
+        region: MailgunRegion,
+        sender: &EmailAddress,
+    ) -> SendResult<SendResponse> {
         let client = reqwest::Client::new();
         let mut params = self.message.params();
         params.insert("from".to_string(), sender.to_string());
-        let url = format!("{}/{}/{}", MAILGUN_API, self.domain, MESSAGES_ENDPOINT);
+        let url = format!(
+            "{}/{}/{}",
+            get_base_url(region),
+            self.domain,
+            MESSAGES_ENDPOINT
+        );
 
         let res = client
             .post(url)
