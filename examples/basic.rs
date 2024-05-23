@@ -5,8 +5,8 @@ use std::collections::HashMap;
 
 fn main() {
     let domain = &env::var("MAILGUN_DOMAIN").expect("MAILGUN_DOMAIN not set");
-    let key = &env::var("MAILGUN_PRIVATE_API_KEY").expect("MAILGUN_PRIVATE_API_KEY not set");
-    let recipient = "dongrify@gmail.com";
+    let key = &env::var("MAILGUN_API_KEY").expect("MAILGUN_API_KEY not set");
+    let recipient = "dongrium@gmail.com";
 
     send_html(recipient, key, domain);
     send_template(recipient, key, domain);
@@ -63,4 +63,4 @@ fn send_template(recipient: &str, key: &str, domain: &str) {
     }
 }
 
-// MAILGUN_DOMAIN=xxx MAILGUN_PRIVATE_API_KEY=xxx-xxx-xxx cargo run --package mailgun-rs --example basic
+// MAILGUN_DOMAIN=xxx MAILGUN_API_KEY=xxx-xxx-xxx cargo run --package mailgun-rs --example basic
