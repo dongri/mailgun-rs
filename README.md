@@ -5,21 +5,29 @@ An unofficial client library for the Mailgun API
 ```toml
 # Cargo.toml
 [dependencies]
-mailgun-rs = "0.1.10"
+mailgun-rs = "0.1.11"
 ```
 
 ### Examples
 
-```rust
-extern crate mailgun_rs;
+### Send with async
+See [examples/async](examples/async)
 
+```
+$ cd examples/async
+$ cargo run
+```
+
+#### Send a simple email
+
+```rust
 use mailgun_rs::{EmailAddress, Mailgun, MailgunRegion, Message};
 use std::collections::HashMap;
 
 fn main() {
-    let domain = "mailgun.hackerth.com";
+    let domain = "huatuo.xyz";
     let key = "key-xxxxxx";
-    let recipient = "dongrify@gmail.com";
+    let recipient = "dongrium@gmail.com";
 
     send_html(recipient, key, domain);
     send_template(recipient, key, domain);
@@ -50,7 +58,11 @@ fn send_html(recipient: &str, key: &str, domain: &str) {
         }
     }
 }
+```
 
+### Send a template email
+
+```rust
 fn send_template(recipient: &str, key: &str, domain: &str) {
     let mut template_vars = HashMap::new();
     template_vars.insert(String::from("firstname"), String::from("Dongri"));

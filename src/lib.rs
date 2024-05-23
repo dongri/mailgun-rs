@@ -18,7 +18,7 @@ fn get_base_url(region: MailgunRegion) -> &'static str {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct Mailgun {
     pub api_key: String,
     pub domain: String,
@@ -34,9 +34,9 @@ pub struct SendResponse {
 }
 
 impl Mailgun {
-    pub fn send(self, region: MailgunRegion, sender: &EmailAddress) -> SendResult<SendResponse> {
+    pub fn send(&self, region: MailgunRegion, sender: &EmailAddress) -> SendResult<SendResponse> {
         let client = reqwest::blocking::Client::new();
-        let mut params = self.message.params();
+        let mut params = self.message.clone().params();
         params.insert("from".to_string(), sender.to_string());
         let url = format!(
             "{}/{}/{}",
@@ -47,7 +47,7 @@ impl Mailgun {
 
         let res = client
             .post(url)
-            .basic_auth("api", Some(self.api_key))
+            .basic_auth("api", Some(self.api_key.clone()))
             .form(&params)
             .send()?
             .error_for_status()?;
@@ -56,12 +56,12 @@ impl Mailgun {
         Ok(parsed)
     }
     pub async fn async_send(
-        self,
+        &self,
         region: MailgunRegion,
         sender: &EmailAddress,
     ) -> SendResult<SendResponse> {
         let client = reqwest::Client::new();
-        let mut params = self.message.params();
+        let mut params = self.message.clone().params();
         params.insert("from".to_string(), sender.to_string());
         let url = format!(
             "{}/{}/{}",
@@ -72,7 +72,7 @@ impl Mailgun {
 
         let res = client
             .post(url)
-            .basic_auth("api", Some(self.api_key))
+            .basic_auth("api", Some(self.api_key.clone()))
             .form(&params)
             .send()
             .await?
@@ -83,7 +83,7 @@ impl Mailgun {
     }
 }
 
-#[derive(TypedBuilder, Default, Debug, PartialEq, Eq)]
+#[derive(TypedBuilder, Default, Debug, PartialEq, Eq, Clone)]
 pub struct Message {
     #[builder(setter(into))]
     pub to: Vec<EmailAddress>,
@@ -153,7 +153,7 @@ impl Message {
     }
 }
 
-#[derive(TypedBuilder, Debug, PartialEq, Eq)]
+#[derive(TypedBuilder, Debug, PartialEq, Eq, Clone)]
 pub struct EmailAddress {
     name: Option<String>,
     address: String,
