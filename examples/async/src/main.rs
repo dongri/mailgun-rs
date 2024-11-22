@@ -25,9 +25,6 @@ fn initialize_mailgun(api_key: &str, domain: &str) {
     let mailgun_client = Mailgun {
         api_key: api_key.to_string(),
         domain: domain.to_string(),
-        message: Message {
-            ..Default::default()
-        },
     };
 
     MAILGUN_CLIENT.set(Mutex::new(mailgun_client)).expect("Mailgun client can only be initialized once");
@@ -45,10 +42,12 @@ async fn send_html(recipient: &str) {
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
 
     if let Some(client) = MAILGUN_CLIENT.get() {
-        let mut mailgun_client = client.lock().unwrap();
-        mailgun_client.message = message.clone();
+        let mailgun_client = client.lock().unwrap();
 
-        match mailgun_client.async_send(MailgunRegion::US, &sender).await {
+        match mailgun_client
+            .async_send(MailgunRegion::US, &sender, message)
+            .await
+        {
             Ok(_) => {
                 println!("successful");
             }
@@ -75,10 +74,9 @@ async fn send_template(recipient: &str, key: &str, domain: &str) {
     let client = Mailgun {
         api_key: String::from(key),
         domain: String::from(domain),
-        message,
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
-    match client.async_send(MailgunRegion::US, &sender).await {
+    match client.async_send(MailgunRegion::US, &sender, message).await {
         Ok(_) => {
             println!("successful");
         }

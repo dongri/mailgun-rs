@@ -45,11 +45,10 @@ fn send_html(recipient: &str, key: &str, domain: &str) {
     let client = Mailgun {
         api_key: String::from(key),
         domain: String::from(domain),
-        message,
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
 
-    match client.send(MailgunRegion::US, &sender) {
+    match client.send(MailgunRegion::US, &sender, message) {
         Ok(_) => {
             println!("successful");
         }
@@ -79,11 +78,10 @@ fn send_template(recipient: &str, key: &str, domain: &str) {
     let client = Mailgun {
         api_key: String::from(key),
         domain: String::from(domain),
-        message,
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
 
-    match client.send(MailgunRegion::US, &sender) {
+    match client.send(MailgunRegion::US, &sender, message) {
         Ok(_) => {
             println!("successful");
         }
