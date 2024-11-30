@@ -22,7 +22,6 @@ fn get_base_url(region: MailgunRegion) -> &'static str {
 pub struct Mailgun {
     pub api_key: String,
     pub domain: String,
-    pub message: Message,
 }
 
 pub type SendResult<T> = Result<T, ReqError>;
@@ -34,9 +33,14 @@ pub struct SendResponse {
 }
 
 impl Mailgun {
-    pub fn send(&self, region: MailgunRegion, sender: &EmailAddress) -> SendResult<SendResponse> {
+    pub fn send(
+        &self,
+        region: MailgunRegion,
+        sender: &EmailAddress,
+        message: Message,
+    ) -> SendResult<SendResponse> {
         let client = reqwest::blocking::Client::new();
-        let mut params = self.message.clone().params();
+        let mut params = message.params();
         params.insert("from".to_string(), sender.to_string());
         let url = format!(
             "{}/{}/{}",
@@ -55,13 +59,15 @@ impl Mailgun {
         let parsed: SendResponse = res.json()?;
         Ok(parsed)
     }
+
     pub async fn async_send(
         &self,
         region: MailgunRegion,
         sender: &EmailAddress,
+        message: Message,
     ) -> SendResult<SendResponse> {
         let client = reqwest::Client::new();
-        let mut params = self.message.clone().params();
+        let mut params = message.params();
         params.insert("from".to_string(), sender.to_string());
         let url = format!(
             "{}/{}/{}",
