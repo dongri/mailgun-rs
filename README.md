@@ -5,7 +5,7 @@ An unofficial client library for the Mailgun API
 ```toml
 # Cargo.toml
 [dependencies]
-mailgun-rs = "1.0.0"
+mailgun-rs = "1.0.1"
 ```
 
 ### Examples
