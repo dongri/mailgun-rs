@@ -124,6 +124,8 @@ pub struct Message {
     #[builder(default, setter(into))]
     pub html: String,
     #[builder(default, setter(into))]
+    pub attachment: String,
+    #[builder(default, setter(into))]
     pub template: String,
     #[builder(default)]
     pub template_vars: HashMap<String, String>,
@@ -143,6 +145,10 @@ impl Message {
 
         params.insert(String::from("text"), self.text);
         params.insert(String::from("html"), self.html);
+
+        if !self.attachment.is_empty() {
+            params.insert(String::from("attachment"), self.attachment);
+        }
 
         // add template
         if !self.template.is_empty() {
@@ -255,6 +261,7 @@ mod tests {
                 template: "template".to_string(),
                 template_vars: [("name".into(), "value".into())].iter().cloned().collect(),
                 template_json: None,
+                attachment: "".to_string(),
             }
         );
     }
