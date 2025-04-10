@@ -2,6 +2,7 @@ use reqwest::Error as ReqError;
 use serde::Deserialize;
 use std::collections::HashMap;
 use std::fmt;
+use thiserror::Error;
 use typed_builder::TypedBuilder;
 
 const MESSAGES_ENDPOINT: &str = "messages";
@@ -24,7 +25,20 @@ pub struct Mailgun {
     pub domain: String,
 }
 
-pub type SendResult<T> = Result<T, ReqError>;
+#[derive(Debug, Error)]
+pub enum SendError {
+    #[error("reqwest error: {0}")]
+    Req(#[from] ReqError),
+
+    #[error("io error while reading `{path}`: {source}")]
+    IoWithPath {
+        path: String,
+        #[source]
+        source: std::io::Error,
+    },
+}
+
+pub type SendResult<T> = Result<T, SendError>;
 
 #[derive(Deserialize, Debug, PartialEq)]
 pub struct SendResponse {
@@ -38,6 +52,7 @@ impl Mailgun {
         region: MailgunRegion,
         sender: &EmailAddress,
         message: Message,
+        attachments: Vec<String>,
     ) -> SendResult<SendResponse> {
         let client = reqwest::blocking::Client::new();
         let mut params = message.params();
@@ -46,10 +61,13 @@ impl Mailgun {
         let mut form = reqwest::blocking::multipart::Form::new();
 
         for (key, value) in params {
-            form = match key == "attachment" {
-                true => form.text(key, value),
-                false => form.file(key, value).expect("cannot set file"), // TODO
-            }
+            form = form.text(key, value);
+        }
+
+        for path in attachments {
+            form = form
+                .file("attachment", &path)
+                .map_err(|err| SendError::IoWithPath { path, source: err })?;
         }
 
         let url = format!(
@@ -75,6 +93,7 @@ impl Mailgun {
         region: MailgunRegion,
         sender: &EmailAddress,
         message: Message,
+        attachments: Vec<String>,
     ) -> SendResult<SendResponse> {
         let client = reqwest::Client::new();
         let mut params = message.params();
@@ -83,10 +102,14 @@ impl Mailgun {
         let mut form = reqwest::multipart::Form::new();
 
         for (key, value) in params {
-            form = match key == "attachment" {
-                true => form.text(key, value),
-                false => form.file(key, value).await.expect("cannot set file"), // TODO
-            }
+            form = form.text(key, value);
+        }
+
+        for path in attachments {
+            form = form
+                .file("attachment", &path)
+                .await
+                .map_err(|err| SendError::IoWithPath { path, source: err })?;
         }
 
         let url = format!(
@@ -124,8 +147,6 @@ pub struct Message {
     #[builder(default, setter(into))]
     pub html: String,
     #[builder(default, setter(into))]
-    pub attachment: String,
-    #[builder(default, setter(into))]
     pub template: String,
     #[builder(default)]
     pub template_vars: HashMap<String, String>,
@@ -145,10 +166,6 @@ impl Message {
 
         params.insert(String::from("text"), self.text);
         params.insert(String::from("html"), self.html);
-
-        if !self.attachment.is_empty() {
-            params.insert(String::from("attachment"), self.attachment);
-        }
 
         // add template
         if !self.template.is_empty() {
@@ -261,7 +278,6 @@ mod tests {
                 template: "template".to_string(),
                 template_vars: [("name".into(), "value".into())].iter().cloned().collect(),
                 template_json: None,
-                attachment: "".to_string(),
             }
         );
     }
