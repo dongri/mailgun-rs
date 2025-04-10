@@ -42,6 +42,16 @@ impl Mailgun {
         let client = reqwest::blocking::Client::new();
         let mut params = message.params();
         params.insert("from".to_string(), sender.to_string());
+
+        let mut form = reqwest::blocking::multipart::Form::new();
+
+        for (key, value) in params {
+            form = match key == "attachment" {
+                true => form.text(key, value),
+                false => form.file(key, value).expect("cannot set file"), // TODO
+            }
+        }
+
         let url = format!(
             "{}/{}/{}",
             get_base_url(region),
@@ -52,7 +62,7 @@ impl Mailgun {
         let res = client
             .post(url)
             .basic_auth("api", Some(self.api_key.clone()))
-            .form(&params)
+            .multipart(form)
             .send()?
             .error_for_status()?;
 
@@ -69,6 +79,16 @@ impl Mailgun {
         let client = reqwest::Client::new();
         let mut params = message.params();
         params.insert("from".to_string(), sender.to_string());
+
+        let mut form = reqwest::multipart::Form::new();
+
+        for (key, value) in params {
+            form = match key == "attachment" {
+                true => form.text(key, value),
+                false => form.file(key, value).await.expect("cannot set file"), // TODO
+            }
+        }
+
         let url = format!(
             "{}/{}/{}",
             get_base_url(region),
@@ -79,7 +99,7 @@ impl Mailgun {
         let res = client
             .post(url)
             .basic_auth("api", Some(self.api_key.clone()))
-            .form(&params)
+            .multipart(form)
             .send()
             .await?
             .error_for_status()?;
