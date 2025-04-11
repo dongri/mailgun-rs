@@ -31,6 +31,7 @@ fn main() {
 
     send_html(recipient, key, domain);
     send_template(recipient, key, domain);
+    send_html_with_attachment(recipient, key, domain);
 }
 
 fn send_html(recipient: &str, key: &str, domain: &str) {
@@ -47,9 +48,8 @@ fn send_html(recipient: &str, key: &str, domain: &str) {
         domain: String::from(domain),
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
-    let attachments = Vec::new();
 
-    match client.send(MailgunRegion::US, &sender, message, attachments) {
+    match client.send(MailgunRegion::US, &sender, message, None) {
         Ok(_) => {
             println!("successful");
         }
@@ -81,9 +81,38 @@ fn send_template(recipient: &str, key: &str, domain: &str) {
         domain: String::from(domain),
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
-    let attachments = Vec::new();
 
-    match client.send(MailgunRegion::US, &sender, message, attachments) {
+    match client.send(MailgunRegion::US, &sender, message, None) {
+        Ok(_) => {
+            println!("successful");
+        }
+        Err(err) => {
+            println!("Error: {err}");
+        }
+    }
+}
+```
+
+#### Send a simple email
+
+```rust
+fn send_html_with_attachment(recipient: &str, key: &str, domain: &str) {
+    let recipient = EmailAddress::address(recipient);
+    let message = Message {
+        to: vec![recipient],
+        subject: String::from("mailgun-rs"),
+        html: String::from("<h1>hello from mailgun with attachments</h1>"),
+        ..Default::default()
+    };
+
+    let client = Mailgun {
+        api_key: String::from(key),
+        domain: String::from(domain),
+    };
+    let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
+    let attachments = vec!["/path/to/attachment-1.txt".to_string(), "/path/to/attachment-2.txt".to_string()];
+
+    match client.send(MailgunRegion::US, &sender, message, Some(attachments)) {
         Ok(_) => {
             println!("successful");
         }

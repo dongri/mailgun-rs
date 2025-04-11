@@ -52,7 +52,7 @@ impl Mailgun {
         region: MailgunRegion,
         sender: &EmailAddress,
         message: Message,
-        attachments: Vec<String>,
+        attachments: Option<Vec<String>>,
     ) -> SendResult<SendResponse> {
         let client = reqwest::blocking::Client::new();
         let mut params = message.params();
@@ -64,7 +64,7 @@ impl Mailgun {
             form = form.text(key, value);
         }
 
-        for path in attachments {
+        for path in attachments.unwrap_or_default() {
             form = form
                 .file("attachment", &path)
                 .map_err(|err| SendError::IoWithPath { path, source: err })?;
@@ -93,7 +93,7 @@ impl Mailgun {
         region: MailgunRegion,
         sender: &EmailAddress,
         message: Message,
-        attachments: Vec<String>,
+        attachments: Option<Vec<String>>,
     ) -> SendResult<SendResponse> {
         let client = reqwest::Client::new();
         let mut params = message.params();
@@ -105,7 +105,7 @@ impl Mailgun {
             form = form.text(key, value);
         }
 
-        for path in attachments {
+        for path in attachments.unwrap_or_default() {
             form = form
                 .file("attachment", &path)
                 .await

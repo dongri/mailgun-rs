@@ -42,13 +42,12 @@ async fn send_html(recipient: &str) {
     };
 
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
-    let attachments = Vec::new();
 
     if let Some(client) = MAILGUN_CLIENT.get() {
         let mailgun_client = client.lock().unwrap();
 
         match mailgun_client
-            .async_send(MailgunRegion::US, &sender, message, attachments)
+            .async_send(MailgunRegion::US, &sender, message, None)
             .await
         {
             Ok(_) => {
@@ -79,10 +78,9 @@ async fn send_template(recipient: &str, key: &str, domain: &str) {
         domain: String::from(domain),
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
-    let attachments = Vec::new();
 
     match client
-        .async_send(MailgunRegion::US, &sender, message, attachments)
+        .async_send(MailgunRegion::US, &sender, message, None)
         .await
     {
         Ok(_) => {

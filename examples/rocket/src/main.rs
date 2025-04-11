@@ -75,9 +75,8 @@ fn send_mail_confirmation(order: &Json<Order<'_>>) {
         domain: String::from(domain),
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
-    let attachments = Vec::new();
 
-    match client.send(MailgunRegion::US, &sender, message, attachments) {
+    match client.send(MailgunRegion::US, &sender, message, None) {
         Ok(_) => {
             println!("successful");
         }
@@ -109,10 +108,9 @@ async fn send_mail_confirmation_async(order: &Json<Order<'_>>) {
         domain: String::from(domain),
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
-    let attachments = Vec::new();
 
     match client
-        .async_send(MailgunRegion::US, &sender, message, attachments)
+        .async_send(MailgunRegion::US, &sender, message, None)
         .await
     {
         Ok(_) => {
