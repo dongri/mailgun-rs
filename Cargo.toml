@@ -1,6 +1,6 @@
 [package]
 name = "mailgun-rs"
-version = "1.0.1"
+version = "1.0.2"
 authors = ["Dongri Jin <dongrium@gmail.com>"]
 description = "An unofficial client library for the Mailgun API"
 edition = "2018"

@@ -510,7 +510,7 @@ dependencies = [
 
 [[package]]
 name = "mailgun-rs"
-version = "1.0.1"
+version = "1.0.2"
 dependencies = [
  "reqwest",
  "serde",
