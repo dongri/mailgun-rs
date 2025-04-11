@@ -47,8 +47,9 @@ fn send_html(recipient: &str, key: &str, domain: &str) {
         domain: String::from(domain),
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
+    let attachments = Vec::new();
 
-    match client.send(MailgunRegion::US, &sender, message) {
+    match client.send(MailgunRegion::US, &sender, message, attachments) {
         Ok(_) => {
             println!("successful");
         }
@@ -80,8 +81,9 @@ fn send_template(recipient: &str, key: &str, domain: &str) {
         domain: String::from(domain),
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
+    let attachments = Vec::new();
 
-    match client.send(MailgunRegion::US, &sender, message) {
+    match client.send(MailgunRegion::US, &sender, message, attachments) {
         Ok(_) => {
             println!("successful");
         }
