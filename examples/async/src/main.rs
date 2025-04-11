@@ -1,9 +1,9 @@
 use dotenv::dotenv;
-use std::env;
-use std::collections::HashMap;
+use mailgun_rs::{EmailAddress, Mailgun, MailgunRegion, Message};
 use once_cell::sync::OnceCell;
+use std::collections::HashMap;
+use std::env;
 use std::sync::Mutex;
-use mailgun_rs::{EmailAddress, Mailgun, Message, MailgunRegion};
 
 static MAILGUN_CLIENT: OnceCell<Mutex<Mailgun>> = OnceCell::new();
 
@@ -27,7 +27,9 @@ fn initialize_mailgun(api_key: &str, domain: &str) {
         domain: domain.to_string(),
     };
 
-    MAILGUN_CLIENT.set(Mutex::new(mailgun_client)).expect("Mailgun client can only be initialized once");
+    MAILGUN_CLIENT
+        .set(Mutex::new(mailgun_client))
+        .expect("Mailgun client can only be initialized once");
 }
 
 async fn send_html(recipient: &str) {
@@ -45,7 +47,7 @@ async fn send_html(recipient: &str) {
         let mailgun_client = client.lock().unwrap();
 
         match mailgun_client
-            .async_send(MailgunRegion::US, &sender, message)
+            .async_send(MailgunRegion::US, &sender, message, None)
             .await
         {
             Ok(_) => {
@@ -76,7 +78,11 @@ async fn send_template(recipient: &str, key: &str, domain: &str) {
         domain: String::from(domain),
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
-    match client.async_send(MailgunRegion::US, &sender, message).await {
+
+    match client
+        .async_send(MailgunRegion::US, &sender, message, None)
+        .await
+    {
         Ok(_) => {
             println!("successful");
         }

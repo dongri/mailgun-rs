@@ -2,6 +2,7 @@ use reqwest::Error as ReqError;
 use serde::Deserialize;
 use std::collections::HashMap;
 use std::fmt;
+use thiserror::Error;
 use typed_builder::TypedBuilder;
 
 const MESSAGES_ENDPOINT: &str = "messages";
@@ -24,7 +25,20 @@ pub struct Mailgun {
     pub domain: String,
 }
 
-pub type SendResult<T> = Result<T, ReqError>;
+#[derive(Debug, Error)]
+pub enum SendError {
+    #[error("reqwest error: {0}")]
+    Req(#[from] ReqError),
+
+    #[error("io error while reading `{path}`: {source}")]
+    IoWithPath {
+        path: String,
+        #[source]
+        source: std::io::Error,
+    },
+}
+
+pub type SendResult<T> = Result<T, SendError>;
 
 #[derive(Deserialize, Debug, PartialEq)]
 pub struct SendResponse {
@@ -38,10 +52,24 @@ impl Mailgun {
         region: MailgunRegion,
         sender: &EmailAddress,
         message: Message,
+        attachments: Option<Vec<String>>,
     ) -> SendResult<SendResponse> {
         let client = reqwest::blocking::Client::new();
         let mut params = message.params();
         params.insert("from".to_string(), sender.to_string());
+
+        let mut form = reqwest::blocking::multipart::Form::new();
+
+        for (key, value) in params {
+            form = form.text(key, value);
+        }
+
+        for path in attachments.unwrap_or_default() {
+            form = form
+                .file("attachment", &path)
+                .map_err(|err| SendError::IoWithPath { path, source: err })?;
+        }
+
         let url = format!(
             "{}/{}/{}",
             get_base_url(region),
@@ -52,7 +80,7 @@ impl Mailgun {
         let res = client
             .post(url)
             .basic_auth("api", Some(self.api_key.clone()))
-            .form(&params)
+            .multipart(form)
             .send()?
             .error_for_status()?;
 
@@ -65,10 +93,25 @@ impl Mailgun {
         region: MailgunRegion,
         sender: &EmailAddress,
         message: Message,
+        attachments: Option<Vec<String>>,
     ) -> SendResult<SendResponse> {
         let client = reqwest::Client::new();
         let mut params = message.params();
         params.insert("from".to_string(), sender.to_string());
+
+        let mut form = reqwest::multipart::Form::new();
+
+        for (key, value) in params {
+            form = form.text(key, value);
+        }
+
+        for path in attachments.unwrap_or_default() {
+            form = form
+                .file("attachment", &path)
+                .await
+                .map_err(|err| SendError::IoWithPath { path, source: err })?;
+        }
+
         let url = format!(
             "{}/{}/{}",
             get_base_url(region),
@@ -79,7 +122,7 @@ impl Mailgun {
         let res = client
             .post(url)
             .basic_auth("api", Some(self.api_key.clone()))
-            .form(&params)
+            .multipart(form)
             .send()
             .await?
             .error_for_status()?;
