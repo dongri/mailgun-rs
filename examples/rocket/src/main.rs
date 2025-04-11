@@ -74,7 +74,7 @@ fn send_mail_confirmation(order: &Json<Order<'_>>) {
         api_key: String::from(api_key),
         domain: String::from(domain),
     };
-    let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
+    let sender = EmailAddress::name_address("no-reply", "no-reply@huatuo.xyz");
 
     match client.send(MailgunRegion::US, &sender, message, None) {
         Ok(_) => {
@@ -107,7 +107,7 @@ async fn send_mail_confirmation_async(order: &Json<Order<'_>>) {
         api_key: String::from(api_key),
         domain: String::from(domain),
     };
-    let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
+    let sender = EmailAddress::name_address("no-reply", "no-reply@huatuo.xyz");
 
     match client
         .async_send(MailgunRegion::US, &sender, message, None)

@@ -47,7 +47,7 @@ fn send_html(recipient: &str, key: &str, domain: &str) {
         api_key: String::from(key),
         domain: String::from(domain),
     };
-    let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
+    let sender = EmailAddress::name_address("no-reply", "no-reply@huatuo.xyz");
 
     match client.send(MailgunRegion::US, &sender, message, None) {
         Ok(_) => {
@@ -65,7 +65,7 @@ fn send_html(recipient: &str, key: &str, domain: &str) {
 ```rust
 fn send_template(recipient: &str, key: &str, domain: &str) {
     let mut template_vars = HashMap::new();
-    template_vars.insert(String::from("firstname"), String::from("Dongri"));
+    template_vars.insert(String::from("name"), String::from("Dongri Jin"));
 
     let recipient = EmailAddress::address(recipient);
     let message = Message {
@@ -80,7 +80,7 @@ fn send_template(recipient: &str, key: &str, domain: &str) {
         api_key: String::from(key),
         domain: String::from(domain),
     };
-    let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
+    let sender = EmailAddress::name_address("no-reply", "no-reply@huatuo.xyz");
 
     match client.send(MailgunRegion::US, &sender, message, None) {
         Ok(_) => {
@@ -109,7 +109,7 @@ fn send_html_with_attachment(recipient: &str, key: &str, domain: &str) {
         api_key: String::from(key),
         domain: String::from(domain),
     };
-    let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
+    let sender = EmailAddress::name_address("no-reply", "no-reply@huatuo.xyz");
     let attachments = vec!["/path/to/attachment-1.txt".to_string(), "/path/to/attachment-2.txt".to_string()];
 
     match client.send(MailgunRegion::US, &sender, message, Some(attachments)) {

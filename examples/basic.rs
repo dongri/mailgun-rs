@@ -25,7 +25,7 @@ fn send_html(recipient: &str, key: &str, domain: &str) {
         api_key: String::from(key),
         domain: String::from(domain),
     };
-    let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
+    let sender = EmailAddress::name_address("no-reply", "no-reply@huatuo.xyz");
 
     match client.send(MailgunRegion::US, &sender, message, None) {
         Ok(_) => {
@@ -39,7 +39,7 @@ fn send_html(recipient: &str, key: &str, domain: &str) {
 
 fn send_template(recipient: &str, key: &str, domain: &str) {
     let mut template_vars = HashMap::new();
-    template_vars.insert(String::from("firstname"), String::from("Dongri"));
+    template_vars.insert(String::from("name"), String::from("Dongri Jin"));
     let recipient = EmailAddress::address(recipient);
     let message = Message {
         to: vec![recipient],
@@ -52,7 +52,7 @@ fn send_template(recipient: &str, key: &str, domain: &str) {
         api_key: String::from(key),
         domain: String::from(domain),
     };
-    let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
+    let sender = EmailAddress::name_address("no-reply", "no-reply@huatuo.xyz");
 
     match client.send(MailgunRegion::US, &sender, message, None) {
         Ok(_) => {
@@ -75,7 +75,7 @@ fn send_with_attachment(recipient: &str, key: &str, domain: &str) {
 
     let mut attachments = Vec::new();
     for item in ["file-1", "file-2"] {
-        let file_name = format!("sample-{item}.txt");
+        let file_name = format!("examples/sample-{item}.txt");
         let file_content = format!("hello from sample {item}");
         fs::write(&file_name, &file_content).expect("cannot write file");
 
@@ -90,7 +90,7 @@ fn send_with_attachment(recipient: &str, key: &str, domain: &str) {
         domain: String::from(domain),
     };
 
-    let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
+    let sender = EmailAddress::name_address("no-reply", "no-reply@huatuo.xyz");
 
     match client.send(MailgunRegion::US, &sender, message, Some(attachments)) {
         Ok(_) => {

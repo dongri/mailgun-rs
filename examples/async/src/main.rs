@@ -41,7 +41,7 @@ async fn send_html(recipient: &str) {
         ..Default::default()
     };
 
-    let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
+    let sender = EmailAddress::name_address("no-reply", "no-reply@huatuo.xyz");
 
     if let Some(client) = MAILGUN_CLIENT.get() {
         let mailgun_client = client.lock().unwrap();
@@ -77,7 +77,7 @@ async fn send_template(recipient: &str, key: &str, domain: &str) {
         api_key: String::from(key),
         domain: String::from(domain),
     };
-    let sender = EmailAddress::name_address("no-reply", "no-reply@hackerth.com");
+    let sender = EmailAddress::name_address("no-reply", "no-reply@huatuo.xyz");
 
     match client
         .async_send(MailgunRegion::US, &sender, message, None)
