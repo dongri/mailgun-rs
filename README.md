@@ -93,7 +93,7 @@ fn send_template(recipient: &str, key: &str, domain: &str) {
 }
 ```
 
-#### Send a simple email
+#### Send an email with attachments
 
 ```rust
 fn send_html_with_attachment(recipient: &str, key: &str, domain: &str) {
