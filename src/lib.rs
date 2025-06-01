@@ -53,6 +53,7 @@ impl Mailgun {
         sender: &EmailAddress,
         message: Message,
         attachments: Option<Vec<String>>,
+        inlines: Option<Vec<String>>,
     ) -> SendResult<SendResponse> {
         let client = reqwest::blocking::Client::new();
         let mut params = message.params();
@@ -67,6 +68,12 @@ impl Mailgun {
         for path in attachments.unwrap_or_default() {
             form = form
                 .file("attachment", &path)
+                .map_err(|err| SendError::IoWithPath { path, source: err })?;
+        }
+
+        for path in inlines.unwrap_or_default() {
+            form = form
+                .file("inline", &path)
                 .map_err(|err| SendError::IoWithPath { path, source: err })?;
         }
 
@@ -94,6 +101,7 @@ impl Mailgun {
         sender: &EmailAddress,
         message: Message,
         attachments: Option<Vec<String>>,
+        inlines: Option<Vec<String>>,
     ) -> SendResult<SendResponse> {
         let client = reqwest::Client::new();
         let mut params = message.params();
@@ -108,6 +116,13 @@ impl Mailgun {
         for path in attachments.unwrap_or_default() {
             form = form
                 .file("attachment", &path)
+                .await
+                .map_err(|err| SendError::IoWithPath { path, source: err })?;
+        }
+
+        for path in inlines.unwrap_or_default() {
+            form = form
+                .file("inline", &path)
                 .await
                 .map_err(|err| SendError::IoWithPath { path, source: err })?;
         }
