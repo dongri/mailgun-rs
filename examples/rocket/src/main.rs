@@ -76,7 +76,7 @@ fn send_mail_confirmation(order: &Json<Order<'_>>) {
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@huatuo.xyz");
 
-    match client.send(MailgunRegion::US, &sender, message, None) {
+    match client.send(MailgunRegion::US, &sender, message, None, None) {
         Ok(_) => {
             println!("successful");
         }

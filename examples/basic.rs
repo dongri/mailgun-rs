@@ -27,7 +27,7 @@ fn send_html(recipient: &str, key: &str, domain: &str) {
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@huatuo.xyz");
 
-    match client.send(MailgunRegion::US, &sender, message, None) {
+    match client.send(MailgunRegion::US, &sender, message, None, None) {
         Ok(_) => {
             println!("successful");
         }
@@ -54,7 +54,7 @@ fn send_template(recipient: &str, key: &str, domain: &str) {
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@huatuo.xyz");
 
-    match client.send(MailgunRegion::US, &sender, message, None) {
+    match client.send(MailgunRegion::US, &sender, message, None, None) {
         Ok(_) => {
             println!("successful");
         }
@@ -92,7 +92,7 @@ fn send_with_attachment(recipient: &str, key: &str, domain: &str) {
 
     let sender = EmailAddress::name_address("no-reply", "no-reply@huatuo.xyz");
 
-    match client.send(MailgunRegion::US, &sender, message, Some(attachments)) {
+    match client.send(MailgunRegion::US, &sender, message, Some(attachments), None) {
         Ok(_) => {
             println!("successful");
         }

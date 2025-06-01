@@ -80,7 +80,7 @@ async fn send_template(recipient: &str, key: &str, domain: &str) {
     let sender = EmailAddress::name_address("no-reply", "no-reply@huatuo.xyz");
 
     match client
-        .async_send(MailgunRegion::US, &sender, message, None)
+        .async_send(MailgunRegion::US, &sender, message, None, None)
         .await
     {
         Ok(_) => {
