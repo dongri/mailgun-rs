@@ -12,6 +12,38 @@ pub enum MailgunRegion {
     EU,
 }
 
+#[derive(Debug, Clone)]
+pub enum AttachmentType {
+    Attachment,
+    Inline,
+}
+
+#[derive(Debug, Clone, TypedBuilder)]
+pub struct Attachment {
+    #[builder(setter(into))]
+    pub path: String,
+    #[builder(default = AttachmentType::Attachment)]
+    pub attachment_type: AttachmentType,
+}
+
+impl From<String> for Attachment {
+    fn from(path: String) -> Self {
+        Attachment {
+            path,
+            attachment_type: AttachmentType::Attachment,
+        }
+    }
+}
+
+impl From<&str> for Attachment {
+    fn from(path: &str) -> Self {
+        Attachment {
+            path: path.to_string(),
+            attachment_type: AttachmentType::Attachment,
+        }
+    }
+}
+
 fn get_base_url(region: MailgunRegion) -> &'static str {
     match region {
         MailgunRegion::US => "https://api.mailgun.net/v3",
@@ -52,7 +84,7 @@ impl Mailgun {
         region: MailgunRegion,
         sender: &EmailAddress,
         message: Message,
-        attachments: Option<Vec<String>>,
+        attachments: Option<Vec<Attachment>>,
     ) -> SendResult<SendResponse> {
         let client = reqwest::blocking::Client::new();
         let mut params = message.params();
@@ -64,10 +96,18 @@ impl Mailgun {
             form = form.text(key, value);
         }
 
-        for path in attachments.unwrap_or_default() {
-            form = form
-                .file("attachment", &path)
-                .map_err(|err| SendError::IoWithPath { path, source: err })?;
+        for attachment in attachments.unwrap_or_default() {
+            let field_name = match attachment.attachment_type {
+                AttachmentType::Attachment => "attachment",
+                AttachmentType::Inline => "inline",
+            };
+
+            form =
+                form.file(field_name, &attachment.path)
+                    .map_err(|err| SendError::IoWithPath {
+                        path: attachment.path.clone(),
+                        source: err,
+                    })?;
         }
 
         let url = format!(
