@@ -110,8 +110,16 @@ fn send_html_with_attachment(recipient: &str, key: &str, domain: &str) {
         domain: String::from(domain),
     };
     let sender = EmailAddress::name_address("no-reply", "no-reply@huatuo.xyz");
-    let attachments = vec!["/path/to/attachment-1.txt".to_string(), "/path/to/attachment-2.txt".to_string()];
-
+    let attachments = vec![
+        Attachment::builder()
+            .path("/path/to/attachment-1.txt".to_string())
+            .attachment_type(AttachmentType::Attachment)
+            .build(),
+        Attachment::builder()
+            .path("/path/to/attachment-2.txt".to_string())
+            .attachment_type(AttachmentType::Inline)
+            .build(),
+    ];
     match client.send(MailgunRegion::US, &sender, message, Some(attachments)) {
         Ok(_) => {
             println!("successful");
