@@ -133,7 +133,7 @@ impl Mailgun {
         region: MailgunRegion,
         sender: &EmailAddress,
         message: Message,
-        attachments: Option<Vec<String>>,
+        attachments: Option<Vec<Attachment>>,
     ) -> SendResult<SendResponse> {
         let client = reqwest::Client::new();
         let mut params = message.params();
@@ -145,11 +145,19 @@ impl Mailgun {
             form = form.text(key, value);
         }
 
-        for path in attachments.unwrap_or_default() {
-            form = form
-                .file("attachment", &path)
-                .await
-                .map_err(|err| SendError::IoWithPath { path, source: err })?;
+        for attachment in attachments.unwrap_or_default() {
+            let field_name = match attachment.attachment_type {
+                AttachmentType::Attachment => "attachment",
+                AttachmentType::Inline => "inline",
+            };
+
+            form =
+                form.file(field_name, &attachment.path)
+                    .await
+                    .map_err(|err| SendError::IoWithPath {
+                        path: attachment.path.clone(),
+                        source: err,
+                    })?;
         }
 
         let url = format!(
