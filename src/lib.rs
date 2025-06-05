@@ -151,13 +151,13 @@ impl Mailgun {
                 AttachmentType::Inline => "inline",
             };
 
-            form =
-                form.file(field_name, &attachment.path)
-                    .await
-                    .map_err(|err| SendError::IoWithPath {
-                        path: attachment.path.clone(),
-                        source: err,
-                    })?;
+            form = form
+                .file(field_name, &attachment.path)
+                .await
+                .map_err(|err| SendError::IoWithPath {
+                    path: attachment.path.clone(),
+                    source: err,
+                })?;
         }
 
         let url = format!(
