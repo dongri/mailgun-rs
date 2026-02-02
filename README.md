@@ -5,7 +5,7 @@ An unofficial client library for the Mailgun API
 ```toml
 # Cargo.toml
 [dependencies]
-mailgun-rs = "2.0.1"
+mailgun-rs = "2.0.2"
 ```
 
 ### Examples
@@ -25,7 +25,7 @@ use mailgun_rs::{EmailAddress, Mailgun, MailgunRegion, Message};
 use std::collections::HashMap;
 
 fn main() {
-    let domain = "huatuo.xyz";
+    let domain = "dongri.org";
     let key = "key-xxxxxx";
     let recipient = "dongrium@gmail.com";
 
@@ -47,7 +47,7 @@ fn send_html(recipient: &str, key: &str, domain: &str) {
         api_key: String::from(key),
         domain: String::from(domain),
     };
-    let sender = EmailAddress::name_address("no-reply", "no-reply@huatuo.xyz");
+    let sender = EmailAddress::name_address("no-reply", "no-reply@dongri.org");
 
     match client.send(MailgunRegion::US, &sender, message, None) {
         Ok(_) => {
@@ -80,7 +80,7 @@ fn send_template(recipient: &str, key: &str, domain: &str) {
         api_key: String::from(key),
         domain: String::from(domain),
     };
-    let sender = EmailAddress::name_address("no-reply", "no-reply@huatuo.xyz");
+    let sender = EmailAddress::name_address("no-reply", "no-reply@dongri.org");
 
     match client.send(MailgunRegion::US, &sender, message, None) {
         Ok(_) => {
@@ -109,7 +109,7 @@ fn send_html_with_attachment(recipient: &str, key: &str, domain: &str) {
         api_key: String::from(key),
         domain: String::from(domain),
     };
-    let sender = EmailAddress::name_address("no-reply", "no-reply@huatuo.xyz");
+    let sender = EmailAddress::name_address("no-reply", "no-reply@dongri.org");
     let attachments = vec![
         Attachment::builder()
             .path("/path/to/attachment-1.txt".to_string())
